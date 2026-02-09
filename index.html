@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Africa Youth Transfer Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: #060911;
+  color: #E2E8F0;
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono { font-family: 'Space Mono', monospace; }
+
+/* ─── HEADER ─── */
+.header {
+  background: linear-gradient(135deg, #0B1120 0%, #0F172A 50%, #0B1120 100%);
+  border-bottom: 1px solid #1E293B;
+  padding: 28px 32px 24px;
+}
+.header-inner { max-width: 1200px; margin: 0 auto; }
+.header-top { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
+.brand-tag { font-size: 11px; color: #F59E0B; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+.brand-title { font-size: 28px; font-weight: 700; letter-spacing: -1px; color: #F8FAFC; line-height: 1.1; }
+.brand-sub { font-size: 13px; color: #475569; margin-top: 6px; }
+.stats { display: flex; gap: 24px; }
+.stat { text-align: right; }
+.stat-value { font-size: 26px; font-weight: 700; line-height: 1; }
+.stat-label { font-size: 10px; color: #475569; letter-spacing: 1px; margin-top: 4px; text-transform: uppercase; }
+
+/* ─── FILTERS ─── */
+.filters { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.search-box { position: relative; flex: 1 1 260px; max-width: 320px; }
+.search-box input {
+  width: 100%; padding: 9px 14px 9px 36px; background: #0B1120;
+  border: 1px solid #1E293B; border-radius: 8px; color: #E2E8F0;
+  font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none;
+}
+.search-box input:focus { border-color: #334155; }
+.search-box input::placeholder { color: #334155; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #475569; font-size: 14px; pointer-events: none; }
+.filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+.filter-pill {
+  padding: 7px 14px; border-radius: 8px; border: 1px solid #1E293B;
+  background: transparent; color: #475569; font-size: 12px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.filter-pill:hover { border-color: #334155; color: #94A3B8; }
+.filter-pill.active { background: rgba(139,158,183,0.08); }
+.country-select {
+  padding: 8px 12px; background: #0B1120; border: 1px solid #1E293B;
+  border-radius: 8px; color: #94A3B8; font-size: 12px;
+  font-family: 'DM Sans', sans-serif; cursor: pointer; outline: none;
+}
+.country-select option { background: #0B1120; }
+
+/* ─── TIER LEGEND ─── */
+.tier-legend { max-width: 1200px; margin: 0 auto; padding: 14px 32px 0; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.tier-legend-label { font-size: 10px; color: #334155; letter-spacing: 1px; }
+.tier-legend-item { display: flex; align-items: center; gap: 5px; }
+.tier-dot { width: 7px; height: 7px; border-radius: 50%; }
+.tier-legend-text { font-size: 10px; color: #475569; }
+
+/* ─── PLAYER LIST ─── */
+.player-list { max-width: 1200px; margin: 0 auto; padding: 16px 32px 40px; }
+.list-info { font-size: 11px; color: #334155; margin-bottom: 12px; }
+
+/* ─── PLAYER CARD ─── */
+.player-card {
+  background: #0B1120; border: 1px solid rgba(30,41,59,0.5);
+  border-radius: 12px; overflow: hidden; margin-bottom: 10px; transition: border-color 0.2s;
+}
+.player-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; cursor: pointer; transition: background 0.15s; user-select: none;
+}
+.player-header:hover { background: #0F172A; }
+.player-header.expanded { background: #0F172A; }
+.player-left { display: flex; align-items: center; gap: 14px; }
+.player-flag { font-size: 22px; }
+.player-name { font-weight: 700; font-size: 15px; color: #F1F5F9; letter-spacing: -0.3px; }
+.player-meta { font-size: 11px; color: #64748B; margin-top: 3px; }
+.player-right { display: flex; align-items: center; gap: 12px; }
+.rumor-count { font-size: 11px; color: #475569; }
+.chevron { color: #475569; font-size: 18px; transition: transform 0.2s; line-height: 1; display: inline-block; }
+.chevron.open { transform: rotate(180deg); }
+
+/* ─── STATUS PILL ─── */
+.status-pill {
+  display: inline-block; padding: 3px 12px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+}
+.status-confirmed { color: #34D399; background: #052E16; border: 1px solid rgba(52,211,153,0.25); }
+.status-active { color: #F59E0B; background: #422006; border: 1px solid rgba(245,158,11,0.25); }
+.status-monitoring { color: #A78BFA; background: #1E1B4B; border: 1px solid rgba(167,139,250,0.25); }
+.status-no_rumours { color: #6B7280; background: #1F2937; border: 1px solid rgba(75,85,99,0.25); }
+
+/* ─── TIER BADGE ─── */
+.tier-badge {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px;
+  border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap;
+}
+.tier-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+.tier-1 { color: #34D399; background: #052E16; border: 1px solid rgba(52,211,153,0.2); }
+.tier-1 .dot { background: #34D399; }
+.tier-2 { color: #FBBF24; background: #422006; border: 1px solid rgba(251,191,36,0.2); }
+.tier-2 .dot { background: #FBBF24; }
+.tier-3 { color: #FB923C; background: #431407; border: 1px solid rgba(251,146,60,0.2); }
+.tier-3 .dot { background: #FB923C; }
+.tier-4 { color: #F87171; background: #450A0A; border: 1px solid rgba(248,113,113,0.2); }
+.tier-4 .dot { background: #F87171; }
+
+/* ─── EXPANDED CONTENT ─── */
+.card-body { border-top: 1px solid #1E293B; }
+.col-headers {
+  display: grid; grid-template-columns: 110px 150px 1fr 180px 72px;
+  gap: 12px; padding: 8px 16px; border-bottom: 1px solid #1E293B; background: #060D1B;
+}
+.col-header { font-size: 9px; font-weight: 700; color: #334155; letter-spacing: 1.5px; }
+.col-header:last-child { text-align: right; }
+
+.section-toggle {
+  padding: 8px 16px; background: #0A0F1A; border-bottom: 1px solid #1E293B;
+  cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none;
+}
+.section-toggle:hover { background: #0D1321; }
+.section-arrow { color: #475569; font-size: 12px; transition: transform 0.15s; display: inline-block; }
+.section-arrow.open { transform: rotate(90deg); }
+.section-label-archive { font-size: 11px; color: #475569; font-weight: 700; letter-spacing: 0.5px; }
+.section-label-recent { font-size: 11px; color: #F59E0B; font-weight: 700; letter-spacing: 0.5px; padding: 8px 16px; background: #0A0F1A; border-bottom: 1px solid #1E293B; }
+
+.rumor-row {
+  display: grid; grid-template-columns: 110px 150px 1fr 180px 72px;
+  gap: 12px; padding: 10px 16px; border-bottom: 1px solid #1E293B;
+  font-size: 13px; line-height: 1.5; align-items: start; transition: background 0.15s;
+}
+.rumor-row:hover { background: #0F172A; }
+.rumor-row.archive { opacity: 0.5; }
+.rumor-date { color: #64748B; font-size: 11px; padding-top: 2px; }
+.rumor-club { color: #CBD5E1; font-weight: 500; }
+.rumor-detail { color: #94A3B8; }
+.rumor-source { color: #64748B; font-size: 11px; padding-top: 2px; }
+.rumor-tier { text-align: right; }
+
+.no-rumors { padding: 20px 16px; text-align: center; color: #334155; font-size: 13px; }
+.no-results { text-align: center; padding: 60px; color: #334155; font-size: 14px; }
+
+.hidden { display: none; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .header { padding: 20px 16px 18px; }
+  .player-list { padding: 12px 16px 32px; }
+  .tier-legend { padding: 10px 16px 0; }
+  .col-headers, .rumor-row { grid-template-columns: 90px 120px 1fr 140px 64px; gap: 8px; }
+  .stats { gap: 16px; }
+  .stat-value { font-size: 20px; }
+}
+@media (max-width: 640px) {
+  .header-top { flex-direction: column; align-items: flex-start; }
+  .stats { align-self: flex-start; }
+  .col-headers, .rumor-row { grid-template-columns: 1fr; gap: 4px; }
+  .col-headers { display: none; }
+  .rumor-row { padding: 12px 16px; }
+  .rumor-tier { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div>
+        <div class="mono brand-tag">Africa Youth Intelligence</div>
+        <h1 class="brand-title">Transfer Tracker</h1>
+        <p class="mono brand-sub">Last updated: Feb 9, 2026 (Sweep #2) · 20 players tracked</p>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="mono stat-value" style="color:#34D399" id="stat-confirmed">3</div>
+          <div class="mono stat-label">Confirmed</div>
+        </div>
+        <div class="stat">
+          <div class="mono stat-value" style="color:#F59E0B" id="stat-active">4</div>
+          <div class="mono stat-label">Active</div>
+        </div>
+        <div class="stat">
+          <div class="mono stat-value" style="color:#64748B" id="stat-total">23</div>
+          <div class="mono stat-label">Total Intel</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters">
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="searchInput" placeholder="Search players, clubs, rumours...">
+      </div>
+      <div class="filter-pills" id="statusFilters">
+        <button class="filter-pill active" data-status="all">All Players</button>
+        <button class="filter-pill" data-status="confirmed">Confirmed</button>
+        <button class="filter-pill" data-status="active">Active Rumours</button>
+        <button class="filter-pill" data-status="monitoring">Monitoring</button>
+        <button class="filter-pill" data-status="no_rumours">No Rumours</button>
+      </div>
+      <select class="country-select" id="countryFilter">
+        <option value="all">All Countries</option>
+        <option value="Angola">Angola</option>
+        <option value="Burkina Faso">Burkina Faso</option>
+        <option value="Ivory Coast">Ivory Coast</option>
+        <option value="Mali">Mali</option>
+        <option value="Senegal">Senegal</option>
+        <option value="Uganda">Uganda</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- TIER LEGEND -->
+<div class="tier-legend mono">
+  <span class="tier-legend-label">TIERS:</span>
+  <div class="tier-legend-item"><span class="tier-dot" style="background:#34D399"></span><span class="tier-legend-text">Tier 1 — Official / Verified</span></div>
+  <div class="tier-legend-item"><span class="tier-dot" style="background:#FBBF24"></span><span class="tier-legend-text">Tier 2 — Reliable Sources</span></div>
+  <div class="tier-legend-item"><span class="tier-dot" style="background:#FB923C"></span><span class="tier-legend-text">Tier 3 — Developing</span></div>
+  <div class="tier-legend-item"><span class="tier-dot" style="background:#F87171"></span><span class="tier-legend-text">Tier 4 — Speculative</span></div>
+</div>
+
+<!-- PLAYER LIST -->
+<div class="player-list">
+  <div class="mono list-info" id="listInfo"></div>
+  <div id="playerContainer"></div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const PLAYERS = [
+  {
+    id:1, name:"Issouf Dabo", country:"Burkina Faso", flag:"🇧🇫", position:"CB", birthYear:2009, currentClub:"New Stars FC", status:"active",
+    rumors:[
+      {date:"Dec 5, 2025",club:"QPR",detail:"🔥 QPR launched concrete offensive after multiple scout observations — convinced by defensive maturity & 1.93m frame",source:"AfricaFoot (exclusive)",tier:2,status:"Active Interest",recent:true},
+      {date:"Dec 7, 2025",club:"Lorient / Leverkusen",detail:"🔥 Lorient and Bayer Leverkusen also closely following alongside QPR",source:"Africa Top Sports",tier:3,status:"Monitoring",recent:true},
+    ]
+  },
+  {
+    id:2, name:"El Hadj Malick Cissé", country:"Senegal", flag:"🇸🇳", position:"CB", birthYear:2008, currentClub:"Be Sport Academy", status:"confirmed",
+    rumors:[
+      {date:"Oct 25, 2025",club:"Burnley / Ipswich",detail:"Interest from Burnley and Ipswich at youth level",source:"AfricaSoccer.com",tier:3,status:"Early Interest",recent:false},
+      {date:"Jan 25, 2026",club:"AC Milan",detail:"🔥 La Gazzetta reports Milan close to signing for Milan Futuro. Barca & Leipzig also tracked",source:"La Gazzetta dello Sport",tier:2,status:"Advanced Negotiations",recent:true},
+      {date:"Jan 27, 2026",club:"AC Milan",detail:"✅ Fabrizio Romano confirms deal sealed. Medical & signatures incoming",source:"Fabrizio Romano, Matteo Moretto",tier:1,status:"CONFIRMED",recent:true},
+      {date:"Jan 30, 2026",club:"AC Milan",detail:"✅ Contract signed — Milan Futuro. Fee: €700k + bonuses (up to €2m). 4.5yr deal",source:"SerieD24, SportMediaset",tier:1,status:"SIGNED",recent:true},
+    ]
+  },
+  {id:3, name:"Toure Alassane", country:"Ivory Coast", flag:"🇨🇮", position:"FW", birthYear:2009, currentClub:"RC Abidjan U19", status:"no_rumours", rumors:[]},
+  {
+    id:4, name:"Yao Hubert", country:"Ivory Coast", flag:"🇨🇮", position:"FW/LW", birthYear:2009, currentClub:"FC San Pedro", status:"active",
+    rumors:[
+      {date:"Mid-Jan 2026",club:"FC Nordsjælland",detail:"🔥 Nordsjælland close to signing. Explosive, direct — attacks with both feet. Brother of Gervinho",source:"AfricaFoot",tier:2,status:"Advanced Negotiations",recent:true},
+    ]
+  },
+  {
+    id:5, name:"Asharaf Loukmane Tapsoba", country:"Burkina Faso", flag:"🇧🇫", position:"ST", birthYear:2010, currentClub:"Réal du Faso", status:"active",
+    rumors:[
+      {date:"Apr 10, 2025",club:"Hammarby / Leverkusen / Lille",detail:"Hammarby, Leverkusen, Lille & RS Berkane all tracking. Hammarby SD traveled to Morocco for U17 AFCON",source:"AfricaFoot (exclusive)",tier:2,status:"Multiple Interest",recent:false},
+      {date:"Jul 8, 2025",club:"Hammarby",detail:"🔥 Hammarby delegation visited Ouagadougou. Pre-contract sealed + partnership with Réal du Faso incl. coach exchanges & player trials",source:"AfricaFoot (exclusive)",tier:2,status:"Pre-contract",recent:false},
+      {date:"Nov 7, 2025",club:"Man United",detail:"Man Utd closely monitoring at U17 World Cup",source:"AfricaFoot, Peoples Person",tier:2,status:"Scouting",recent:false},
+      {date:"Dec 5, 2025",club:"Chelsea",detail:"🔥 Chelsea stepped up campaign. Man Utd leading but Chelsea surging. Likened to Drogba",source:"TEAMtalk",tier:2,status:"Long-term (2027)",recent:true},
+      {date:"Dec 5, 2025",club:"Multiple (10+ clubs)",detail:"🔥 Arsenal, Liverpool, Spurs, Barca, Atletico, PSG, Marseille, Leipzig, BVB, Juve all scouting",source:"TEAMtalk",tier:2,status:"Scouting",recent:true},
+      {date:"Dec 5, 2025",club:"Chelsea",detail:"Chelsea also discussing teammate Mohamed Zongo (AM, b.2009)",source:"TEAMtalk",tier:2,status:"Parallel Interest",recent:true},
+    ]
+  },
+  {id:6, name:"Souleymane Faye", country:"Senegal", flag:"🇸🇳", position:"—", birthYear:2010, currentClub:"Sahel F.C", status:"no_rumours", rumors:[]},
+  {id:7, name:"Cheick Malo", country:"Ivory Coast", flag:"🇨🇮", position:"MF", birthYear:2009, currentClub:"San Pedro FC", status:"no_rumours", rumors:[]},
+  {id:8, name:"Souleymane Doumbia", country:"Mali", flag:"🇲🇱", position:"DF", birthYear:2008, currentClub:"Derby Academy", status:"no_rumours", rumors:[]},
+  {
+    id:9, name:"Mahamadou Traore", country:"Mali", flag:"🇲🇱", position:"MF", birthYear:2009, currentClub:"Players Dreams", status:"active",
+    rumors:[
+      {date:"Feb 8, 2026",club:"Randers FC",detail:"🔥 Randers FC (Denmark) invited Traore for trial that could lead to professional contract. Villarreal & Monaco also interested",source:"AfricaFoot via Foot Africa",tier:2,status:"Trial Invitation",recent:true},
+    ]
+  },
+  {
+    id:10, name:"Mor Talla Ndiaye", country:"Senegal", flag:"🇸🇳", position:"CB", birthYear:2008, currentClub:"Liverpool FC U21s", status:"confirmed",
+    rumors:[
+      {date:"Jan 5, 2026",club:"Liverpool FC",detail:"🔥 Senegalese journalist reports Liverpool 'expected' to sign. Multiple PL clubs pursuing",source:"This Is Anfield, Saikou Seydi",tier:2,status:"Advanced Negotiations",recent:true},
+      {date:"Jan 10, 2026",club:"Liverpool FC",detail:"✅ Liverpool complete signing. Fee ~£1m. 4.5yr contract. Club owned by Demba Ba",source:"LiverpoolFC.com, The Athletic",tier:1,status:"SIGNED",recent:true},
+      {date:"Jan 26, 2026",club:"Liverpool FC",detail:"⚽ Minor medical issue found — not expected on sidelines long. Missed U21s vs Leeds",source:"Liverpool.com",tier:2,status:"Integration",recent:true},
+    ]
+  },
+  {id:11, name:"El Hadj Yamar Ndiaye", country:"Senegal", flag:"🇸🇳", position:"FW", birthYear:2009, currentClub:"Challenge F.C", status:"no_rumours", rumors:[]},
+  {
+    id:12, name:"Ettienne Mendy", country:"Senegal", flag:"🇸🇳", position:"FW/RW", birthYear:2008, currentClub:"Diambars FC", status:"monitoring",
+    rumors:[
+      {date:"Sep 11, 2025",club:"Man United",detail:"🔥 Mendy on trial at Carrington. Eligible summer 2026. 'Extraordinarily effective dribbler'",source:"13football, Scouts Attending",tier:2,status:"Trial",recent:false},
+      {date:"Sep 12, 2025",club:"Man United",detail:"AfricaFoot rates as top 3 Senegal U17 prospect. Needs physical development",source:"United In Focus",tier:2,status:"Assessment",recent:false},
+    ]
+  },
+  {
+    id:13, name:"James Bogere", country:"Uganda", flag:"🇺🇬", position:"FW", birthYear:2008, currentClub:"Aarhus GF U19", status:"confirmed",
+    rumors:[
+      {date:"Nov 21, 2025",club:"Multiple clubs",detail:"🔥 Man Utd, Brentford, Brighton, Genk & Aarhus monitoring",source:"Sportsboom",tier:3,status:"Multiple Interest",recent:false},
+      {date:"Dec 10, 2025",club:"Aarhus GF",detail:"✅ Bogere & teammate sign professional contracts with Danish Superliga leaders AGF. Free transfer",source:"Kawowo, PanAfricaFootball",tier:1,status:"CONFIRMED",recent:true},
+      {date:"Feb 2, 2026",club:"Aarhus GF",detail:"✅ Transfer officially registered. Contract until Jun 30, 2028. U19 Boys League",source:"AfricaSoccer, Pulse Sports",tier:1,status:"SIGNED",recent:true},
+    ]
+  },
+  {id:14, name:"Adama Some", country:"Ivory Coast", flag:"🇨🇮", position:"MF", birthYear:2009, currentClub:"ISCA", status:"no_rumours", rumors:[]},
+  {id:15, name:"Delfim Luwawu", country:"Angola", flag:"🇦🇴", position:"DM", birthYear:2008, currentClub:"AFA", status:"no_rumours", rumors:[]},
+  {id:16, name:"Prince Hamed Ouedraogo", country:"Burkina Faso", flag:"🇧🇫", position:"GK", birthYear:2009, currentClub:"Réal du Faso", status:"no_rumours", rumors:[]},
+  {id:17, name:"Vincent Gomis", country:"Senegal", flag:"🇸🇳", position:"GK", birthYear:2008, currentClub:"Génération Foot", status:"no_rumours", rumors:[]},
+  {id:18, name:"Ilídio Panda", country:"Angola", flag:"🇦🇴", position:"FW", birthYear:2008, currentClub:"Petro Luanda", status:"no_rumours", rumors:[]},
+  {id:19, name:"Ysso Donatien Bama", country:"Burkina Faso", flag:"🇧🇫", position:"CB", birthYear:2007, currentClub:"Rahimo FC", status:"no_rumours", rumors:[]},
+  {id:20, name:"Pape Sémou Sané", country:"Senegal", flag:"🇸🇳", position:"FW/RW", birthYear:2007, currentClub:"Casa Sports", status:"no_rumours", rumors:[]},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let searchQuery = "";
+let statusFilter = "all";
+let countryFilter = "all";
+let expandedIds = new Set([2, 5, 9, 10, 13]);
+let archiveOpen = {};
+
+// ── RENDER ─────────────────────────────────────────────────────────────
+function tierBadge(tier) {
+  return `<span class="mono tier-badge tier-${tier}"><span class="dot"></span>Tier ${tier}</span>`;
+}
+
+function statusPill(status) {
+  const labels = {
+    confirmed: "✅ CONFIRMED",
+    active: "🔥 ACTIVE",
+    monitoring: "👁 MONITORING",
+    no_rumours: "— NO RUMOURS"
+  };
+  return `<span class="mono status-pill status-${status}">${labels[status] || status}</span>`;
+}
+
+function rumorRowHTML(r, isArchive) {
+  return `
+    <div class="rumor-row ${isArchive ? 'archive' : ''}">
+      <span class="mono rumor-date">${r.date}</span>
+      <span class="rumor-club">${r.club}</span>
+      <span class="rumor-detail">${r.detail}</span>
+      <span class="mono rumor-source">${r.source}</span>
+      <span class="rumor-tier">${tierBadge(r.tier)}</span>
+    </div>`;
+}
+
+function playerCardHTML(p) {
+  const isExpanded = expandedIds.has(p.id);
+  const archiveRumors = p.rumors.filter(r => !r.recent);
+  const recentRumors = p.rumors.filter(r => r.recent);
+  const isArchiveOpen = archiveOpen[p.id] || false;
+  const rumorCount = p.rumors.length;
+
+  let body = "";
+  if (isExpanded) {
+    body += `<div class="card-body">`;
+    body += `<div class="col-headers mono">
+      <span class="col-header">DATE</span>
+      <span class="col-header">CLUB</span>
+      <span class="col-header">DETAILS</span>
+      <span class="col-header">SOURCE</span>
+      <span class="col-header">TIER</span>
+    </div>`;
+
+    if (archiveRumors.length > 0) {
+      body += `<div class="section-toggle" onclick="toggleArchive(${p.id}, event)">
+        <span class="section-arrow ${isArchiveOpen ? 'open' : ''}">▸</span>
+        <span class="mono section-label-archive">📦 ARCHIVE (${archiveRumors.length})</span>
+      </div>`;
+      if (isArchiveOpen) {
+        archiveRumors.forEach(r => { body += rumorRowHTML(r, true); });
+      }
+    }
+
+    if (recentRumors.length > 0) {
+      body += `<div class="mono section-label-recent">🔥 RECENT</div>`;
+      recentRumors.forEach(r => { body += rumorRowHTML(r, false); });
+    } else if (archiveRumors.length === 0) {
+      body += `<div class="no-rumors">No transfer rumours found in last 60 days</div>`;
+    }
+
+    body += `</div>`;
+  }
+
+  return `
+    <div class="player-card" style="border-color:${isExpanded ? '#1E293B' : 'rgba(30,41,59,0.5)'}">
+      <div class="player-header ${isExpanded ? 'expanded' : ''}" onclick="togglePlayer(${p.id})">
+        <div class="player-left">
+          <span class="player-flag">${p.flag}</span>
+          <div>
+            <div class="player-name">${p.name}</div>
+            <div class="mono player-meta">${p.position} · ${p.birthYear} · ${p.currentClub}</div>
+          </div>
+        </div>
+        <div class="player-right">
+          ${rumorCount > 0 ? `<span class="mono rumor-count">${rumorCount} rumour${rumorCount !== 1 ? 's' : ''}</span>` : ''}
+          ${statusPill(p.status)}
+          <span class="chevron ${isExpanded ? 'open' : ''}">▾</span>
+        </div>
+      </div>
+      ${body}
+    </div>`;
+}
+
+function render() {
+  const q = searchQuery.toLowerCase();
+  const filtered = PLAYERS.filter(p => {
+    if (statusFilter !== "all" && p.status !== statusFilter) return false;
+    if (countryFilter !== "all" && p.country !== countryFilter) return false;
+    if (q) {
+      const inName = p.name.toLowerCase().includes(q);
+      const inClub = p.currentClub.toLowerCase().includes(q);
+      const inRumors = p.rumors.some(r =>
+        r.club.toLowerCase().includes(q) || r.detail.toLowerCase().includes(q)
+      );
+      if (!inName && !inClub && !inRumors) return false;
+    }
+    return true;
+  });
+
+  document.getElementById("listInfo").textContent =
+    `${filtered.length} of ${PLAYERS.length} players · Click to expand`;
+
+  const container = document.getElementById("playerContainer");
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results">No players match your filters.</div>`;
+  } else {
+    container.innerHTML = filtered.map(p => playerCardHTML(p)).join("");
+  }
+}
+
+// ── INTERACTIONS ──────────────────────────────────────────────────────
+function togglePlayer(id) {
+  if (expandedIds.has(id)) expandedIds.delete(id);
+  else expandedIds.add(id);
+  render();
+}
+
+function toggleArchive(id, e) {
+  e.stopPropagation();
+  archiveOpen[id] = !archiveOpen[id];
+  render();
+}
+
+// Search
+document.getElementById("searchInput").addEventListener("input", function(e) {
+  searchQuery = e.target.value;
+  render();
+});
+
+// Status filter pills
+document.querySelectorAll(".filter-pill").forEach(btn => {
+  btn.addEventListener("click", function() {
+    document.querySelectorAll(".filter-pill").forEach(b => b.classList.remove("active"));
+    this.classList.add("active");
+    statusFilter = this.dataset.status;
+
+    // Dynamic pill color
+    const colors = { all:"#8B9EB7", confirmed:"#34D399", active:"#F59E0B", monitoring:"#A78BFA", no_rumours:"#6B7280" };
+    const c = colors[statusFilter] || "#8B9EB7";
+    this.style.borderColor = c + "66";
+    this.style.background = c + "15";
+    this.style.color = c;
+
+    render();
+  });
+});
+
+// Country filter
+document.getElementById("countryFilter").addEventListener("change", function() {
+  countryFilter = this.value;
+  render();
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>
