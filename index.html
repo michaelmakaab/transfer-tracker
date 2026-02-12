@@ -151,6 +151,46 @@ body {
 .no-rumors { padding: 20px 16px; text-align: center; color: #334155; font-size: 13px; }
 .no-results { text-align: center; padding: 60px; color: #334155; font-size: 14px; }
 
+/* ─── INTEL PANEL ─── */
+.intel-toggle {
+  padding: 8px 16px; background: #0A0F1A; border-bottom: 1px solid #1E293B;
+  cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none;
+}
+.intel-toggle:hover { background: #0D1321; }
+.intel-label { font-size: 11px; color: #38BDF8; font-weight: 700; letter-spacing: 0.5px; }
+.intel-panel {
+  padding: 14px 16px 16px; background: #080E1C; border-bottom: 1px solid #1E293B;
+}
+.intel-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0; 
+}
+.intel-row {
+  display: flex; padding: 6px 0; border-bottom: 1px solid rgba(30,41,59,0.3);
+}
+.intel-row:last-child { border-bottom: none; }
+.intel-key {
+  width: 130px; min-width: 130px; font-size: 10px; font-weight: 700;
+  color: #475569; letter-spacing: 0.8px; text-transform: uppercase; padding-top: 2px;
+}
+.intel-val {
+  font-size: 13px; color: #CBD5E1; line-height: 1.5; flex: 1;
+}
+.intel-section-title {
+  font-size: 10px; font-weight: 700; color: #38BDF8; letter-spacing: 1.5px;
+  text-transform: uppercase; padding: 10px 0 6px; border-bottom: 1px solid rgba(56,189,248,0.15);
+  margin-bottom: 2px;
+}
+.intel-section-title:first-child { padding-top: 0; }
+.intel-notes {
+  font-size: 12px; color: #94A3B8; line-height: 1.6; padding: 8px 0 2px;
+  font-style: italic;
+}
+.intel-gap { font-size: 11px; color: #334155; font-style: italic; }
+@media (max-width: 640px) {
+  .intel-grid { grid-template-columns: 1fr; }
+  .intel-key { width: 100px; min-width: 100px; }
+}
+
 .hidden { display: none; }
 
 /* ─── RESPONSIVE ─── */
@@ -181,7 +221,7 @@ body {
       <div>
         <div class="mono brand-tag">Africa Youth Intelligence</div>
         <h1 class="brand-title">Transfer Tracker</h1>
-        <p class="mono brand-sub">Last updated: Feb 9, 2026 (Sweep #2) · 20 players tracked</p>
+        <p class="mono brand-sub">Last updated: Feb 12, 2026 (Sweep #3) · 21 players tracked</p>
       </div>
       <div class="stats">
         <div class="stat">
@@ -189,11 +229,11 @@ body {
           <div class="mono stat-label">Confirmed</div>
         </div>
         <div class="stat">
-          <div class="mono stat-value" style="color:#F59E0B" id="stat-active">4</div>
+          <div class="mono stat-value" style="color:#F59E0B" id="stat-active">5</div>
           <div class="mono stat-label">Active</div>
         </div>
         <div class="stat">
-          <div class="mono stat-value" style="color:#64748B" id="stat-total">23</div>
+          <div class="mono stat-value" style="color:#64748B" id="stat-total">26</div>
           <div class="mono stat-label">Total Intel</div>
         </div>
       </div>
@@ -283,14 +323,15 @@ const PLAYERS = [
   {
     id:9, name:"Mahamadou Traore", country:"Mali", flag:"🇲🇱", position:"MF", birthYear:2009, currentClub:"Players Dreams", status:"active",
     rumors:[
-      {date:"Feb 8, 2026",club:"Randers FC",detail:"🔥 Randers FC (Denmark) invited Traore for trial that could lead to professional contract. Villarreal & Monaco also interested",source:"AfricaFoot via Foot Africa",tier:2,status:"Trial Invitation",recent:true},
+      {date:"Feb 8, 2026",club:"Randers FC",detail:"🔥 Randers FC (Denmark) invited Traore for trial that could lead to professional contract. Villarreal & Monaco also interested",source:"AfricaFoot via Foot Africa",tier:2,status:"Trial Invitation",recent:false},
+      {date:"Feb 10, 2026",club:"Eintracht Frankfurt",detail:"🔥 Frankfurt have almost finalised deal — ~3yr contract. Despite Randers lead, Traore heading to Bundesliga instead",source:"AfricaFoot (exclusive)",tier:2,status:"Advanced Negotiations",recent:true},
     ]
   },
   {
     id:10, name:"Mor Talla Ndiaye", country:"Senegal", flag:"🇸🇳", position:"CB", birthYear:2008, currentClub:"Liverpool FC U21s", status:"confirmed",
     rumors:[
       {date:"Jan 5, 2026",club:"Liverpool FC",detail:"🔥 Senegalese journalist reports Liverpool 'expected' to sign. Multiple PL clubs pursuing",source:"This Is Anfield, Saikou Seydi",tier:2,status:"Advanced Negotiations",recent:true},
-      {date:"Jan 10, 2026",club:"Liverpool FC",detail:"✅ Liverpool complete signing. Fee ~£1m. 4.5yr contract. Club owned by Demba Ba",source:"LiverpoolFC.com, The Athletic",tier:1,status:"SIGNED",recent:true},
+      {date:"Jan 10, 2026",club:"Liverpool FC",detail:"✅ Liverpool complete signing from Amitié FC (Thiès). Fee ~£1m. 4.5yr contract. Club president: Demba Ba",source:"LiverpoolFC.com, The Athletic",tier:1,status:"SIGNED",recent:true},
       {date:"Jan 26, 2026",club:"Liverpool FC",detail:"⚽ Minor medical issue found — not expected on sidelines long. Missed U21s vs Leeds",source:"Liverpool.com",tier:2,status:"Integration",recent:true},
     ]
   },
@@ -317,14 +358,173 @@ const PLAYERS = [
   {id:18, name:"Ilídio Panda", country:"Angola", flag:"🇦🇴", position:"FW", birthYear:2008, currentClub:"Petro Luanda", status:"no_rumours", rumors:[]},
   {id:19, name:"Ysso Donatien Bama", country:"Burkina Faso", flag:"🇧🇫", position:"CB", birthYear:2007, currentClub:"Rahimo FC", status:"no_rumours", rumors:[]},
   {id:20, name:"Pape Sémou Sané", country:"Senegal", flag:"🇸🇳", position:"FW/RW", birthYear:2007, currentClub:"Casa Sports", status:"no_rumours", rumors:[]},
+  {
+    id:21, name:"Mouhamed Diop", country:"Senegal", flag:"🇸🇳", position:"FW", birthYear:2009, currentClub:"AJEL Rufisque", status:"active",
+    rumors:[
+      {date:"Dec 18, 2025",club:"ES Sétif",detail:"🔥 ES Sétif (Algeria) closely tracking. Top scorer in Senegalese Ligue 1 — 4 goals in 7 games. Arrived from Wally Daan de Thiès",source:"AfricaFoot (exclusive)",tier:2,status:"Scouting",recent:false},
+      {date:"Dec 23, 2025",club:"ES Sétif",detail:"🔥 Sétif submit €70k offer. AJEL demanding €200k. Negotiations ongoing. Other foreign clubs also interested",source:"AfricaFoot (exclusive)",tier:2,status:"Negotiations",recent:true},
+    ]
+  },
 ];
+
+// ── INTEL DATA ────────────────────────────────────────────────────────
+const INTEL = {
+  1: {
+    height:"193cm", foot:"—", contract:"—",
+    previousClub:"New Stars FC (academy)", 
+    seasonStats:"Key player for Burkina Faso U17 at 2025 FIFA U17 World Cup",
+    clubStanding:"New Stars FC — Burkinabè academy known for producing Arsène Kouassi (Lorient), Alio Souleymane (Nordsjælland)",
+    notes:"Imposing 1.93m frame with defensive maturity beyond his age. One of the standout defenders at the U17 World Cup in Qatar. Profile validated by multiple European scouts."
+  },
+  2: {
+    height:"—", foot:"—", contract:"4.5yr deal with AC Milan (until ~2030)",
+    previousClub:"Be Sport Academy (Senegal)",
+    seasonStats:"Played at youth level in Senegalese system before Milan move",
+    clubStanding:"Signed to Milan Futuro (Serie D pathway). Fee: €700k + bonuses (up to €2m)",
+    notes:"Strong centre-back prospect. Attracted interest from Burnley, Ipswich, Barcelona and RB Leipzig before Milan sealed the deal. Confirmed by Fabrizio Romano."
+  },
+  3: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"RC Abidjan U19 (academy product)",
+    seasonStats:"Active in Ivorian U19 competition",
+    clubStanding:"RC Abidjan — established Ivorian club",
+    notes:"Forward on our watchlist. Limited public intel available — scouting network sourced."
+  },
+  4: {
+    height:"Imposing physical frame", foot:"Both feet", contract:"—",
+    previousClub:"FC San Pedro (Ivory Coast)",
+    seasonStats:"Featured at 2025 FIFA U17 World Cup for Ivory Coast",
+    clubStanding:"FC San Pedro — Ivorian Ligue 1 club",
+    notes:"Explosive, direct winger who attacks his marker with both feet. Clean touches on the ball. Brother of Gervinho (ex-Arsenal, Roma). Described as the modern winger profile — can cut inside, cross, and shoot from either side."
+  },
+  5: {
+    height:"—", foot:"—", contract:"Pre-contract with Hammarby (partnership deal with Réal du Faso)",
+    previousClub:"Réal du Faso (academy)",
+    seasonStats:"Starred at 2025 FIFA U17 World Cup — youngest player at the tournament (b. March 2010). Burkina Faso reached QF",
+    clubStanding:"Réal du Faso — top Burkinabè academy. Cannot move to Europe until March 2028 (turns 18)",
+    notes:"Likened to Didier Drogba. Generational talent with 10+ elite clubs tracking. Chelsea leading charge over Man United. Hammarby hold a pre-contract + partnership with Réal du Faso incl. coach exchanges. Long-term deal — earliest move 2027/2028. Teammate Mohamed Zongo (AM, b.2009) also attracting Chelsea interest."
+  },
+  6: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"Sahel F.C (Senegal)",
+    seasonStats:"—",
+    clubStanding:"Sahel F.C",
+    notes:"Young prospect (b.2010) on watchlist. Limited public intel — scouting network sourced."
+  },
+  7: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"San Pedro FC (Ivory Coast)",
+    seasonStats:"Active in Ivorian Ligue 1",
+    clubStanding:"San Pedro FC — same club as Yao Hubert (now departed to Nordsjælland)",
+    notes:"Midfielder on watchlist. Limited public intel available."
+  },
+  8: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"Derby Academy (Mali)",
+    seasonStats:"—",
+    clubStanding:"Derby Academy — Malian formation centre",
+    notes:"Defender on watchlist. Limited public intel available."
+  },
+  9: {
+    height:"—", foot:"—", contract:"~3yr deal with Eintracht Frankfurt (pending)",
+    previousClub:"Académie Football Players Dreams, Bamako (AFPD)",
+    seasonStats:"Standout at 2025 CAF U17 AFCON and 2025 FIFA U17 World Cup for Mali. Wore #17",
+    clubStanding:"Players Dreams — rising Malian academy that has produced several Europe-bound talents",
+    notes:"Defensive midfielder known for his engagement and work rate. Initially headed for Randers FC trial, but Frankfurt swooped in. Villarreal and AS Monaco also expressed interest. Academy director confirmed multiple European clubs tracking him. First professional contract imminent."
+  },
+  10: {
+    height:"188cm", foot:"Left", contract:"4.5yr deal with Liverpool FC (until ~2030)",
+    previousClub:"Amitié FC (Thiès, Senegal) — club president: Demba Ba. Previously Bousports Academy",
+    seasonStats:"4 appearances at 2025 FIFA U17 World Cup (all starts). Senegal reached R32 before Uganda exit",
+    clubStanding:"Liverpool FC U21s under Rob Page. Fee ~£1m + add-ons to Amitié FC. Beat multiple PL clubs for his signature",
+    notes:"Left-footed CB, 188cm. Compared to Kalidou Koulibaly — proactive defender who reads play and steps up to win the ball. Strong in duels, comfortable playing out from the back. Originally a midfielder before switching to defence. Minor medical issue found on arrival — not long-term, expected in training within weeks. Featured as OneFootball 'Gem of the Week' (Feb 10, 2026)."
+  },
+  11: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"Challenge F.C (Senegal)",
+    seasonStats:"—",
+    clubStanding:"Challenge F.C",
+    notes:"Forward on watchlist. Limited public intel available."
+  },
+  12: {
+    height:"Needs physical development", foot:"—", contract:"—",
+    previousClub:"Diambars FC (Senegal)",
+    seasonStats:"Featured for Senegal at 2025 CAF U17 AFCON (QF exit on penalties). Rated top 3 Senegal U17 prospect by AfricaFoot",
+    clubStanding:"Diambars FC — elite Senegalese academy (also produced Sidy Barhama Ndiaye → Liverpool)",
+    notes:"Extraordinarily effective dribbler. Very good in the last 30 metres with excellent technical skills. Right winger who was trialled at Man Utd's Carrington (Sep 2025). Eligible for summer 2026 transfer. Needs to add physical size and improve crossing/passing. Modern wide player profile."
+  },
+  13: {
+    height:"—", foot:"—", contract:"Until Jun 30, 2028 with Aarhus GF",
+    previousClub:"Ugandan youth system → Aarhus GF (free transfer)",
+    seasonStats:"Playing in AGF U19 Boys League. Man Utd, Brentford, Brighton, Genk all monitored before AGF signed him",
+    clubStanding:"Aarhus GF — Danish Superliga leaders. Transfer officially registered Feb 2, 2026",
+    notes:"Forward who attracted significant interest from PL and European clubs before signing professional terms with AGF. Free transfer. Teammate also signed. Good pathway club for development with Superliga ambitions."
+  },
+  14: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"ISCA (Ivory Coast)",
+    seasonStats:"—",
+    clubStanding:"ISCA",
+    notes:"Midfielder on watchlist. Limited public intel available."
+  },
+  15: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"AFA (Angola)",
+    seasonStats:"—",
+    clubStanding:"AFA — Angolan formation academy",
+    notes:"Defensive midfielder on watchlist. Limited public intel available."
+  },
+  16: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"Réal du Faso (Burkina Faso)",
+    seasonStats:"—",
+    clubStanding:"Réal du Faso — same academy as Tapsoba. Top Burkinabè formation centre",
+    notes:"Goalkeeper on watchlist. Teammate of Asharaf Loukmane Tapsoba at Réal du Faso."
+  },
+  17: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"Génération Foot (Senegal)",
+    seasonStats:"—",
+    clubStanding:"Génération Foot — one of Senegal's most renowned academies (produced Sadio Mané, Ismaïla Sarr, etc.)",
+    notes:"Goalkeeper on watchlist. Génération Foot pedigree is a strong indicator — the academy has an elite European pipeline."
+  },
+  18: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"Petro Luanda (Angola)",
+    seasonStats:"—",
+    clubStanding:"Petro Luanda — one of Angola's biggest clubs, regular CAF competition participants",
+    notes:"Forward on watchlist. Playing at a top-tier Angolan club — good platform for visibility."
+  },
+  19: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"Rahimo FC (Burkina Faso)",
+    seasonStats:"—",
+    clubStanding:"Rahimo FC — Burkinabè Ligue 1",
+    notes:"Centre-back on watchlist (b.2007 — older in this cohort). Limited public intel available."
+  },
+  20: {
+    height:"—", foot:"—", contract:"—",
+    previousClub:"Casa Sports (Senegal)",
+    seasonStats:"—",
+    clubStanding:"Casa Sports — Senegalese Ligue 1, based in Ziguinchor (Casamance region)",
+    notes:"Forward/right winger on watchlist (b.2007 — older in this cohort). Limited public intel available."
+  },
+  21: {
+    height:"189cm", foot:"Right", contract:"Until 2028 with AJEL Rufisque",
+    previousClub:"Wally Daan FC (Thiès) — scored 15 goals last season",
+    seasonStats:"4 goals in 8 apps — top scorer in Senegalese Ligue 1 2025/26. Key man in AJEL's title push",
+    clubStanding:"AJEL Rufisque — 1st place in Senegalese Ligue 1 (24 pts after MD13). Promoted from Ligue 2 last season",
+    notes:"Known as 'Jude'. Elegant and technically strong — excellent positioning, reading of the game, and finishing instinct. Considered the biggest revelation at AJEL. Already playing senior Ligue 1 football at 16. AJEL valuation: €200k. Multiple foreign clubs circling beyond ES Sétif."
+  },
+};
 
 // ── STATE ─────────────────────────────────────────────────────────────
 let searchQuery = "";
 let statusFilter = "all";
 let countryFilter = "all";
-let expandedIds = new Set([2, 5, 9, 10, 13]);
+let expandedIds = new Set([2, 5, 9, 10, 13, 21]);
 let archiveOpen = {};
+let intelOpen = {};
 
 // ── RENDER ─────────────────────────────────────────────────────────────
 function tierBadge(tier) {
@@ -357,11 +557,40 @@ function playerCardHTML(p) {
   const archiveRumors = p.rumors.filter(r => !r.recent);
   const recentRumors = p.rumors.filter(r => r.recent);
   const isArchiveOpen = archiveOpen[p.id] || false;
+  const isIntelOpen = intelOpen[p.id] || false;
   const rumorCount = p.rumors.length;
+  const intel = INTEL[p.id];
 
   let body = "";
   if (isExpanded) {
     body += `<div class="card-body">`;
+
+    // ── INTEL TOGGLE ──
+    if (intel) {
+      body += `<div class="intel-toggle" onclick="toggleIntel(${p.id}, event)">
+        <span class="section-arrow ${isIntelOpen ? 'open' : ''}">▸</span>
+        <span class="mono intel-label">ℹ️ PLAYER INTEL</span>
+      </div>`;
+      if (isIntelOpen) {
+        body += `<div class="intel-panel">`;
+        // Bio section
+        body += `<div class="intel-section-title mono">Bio</div>`;
+        body += intelRow("Height", intel.height);
+        body += intelRow("Foot", intel.foot);
+        body += intelRow("Contract", intel.contract);
+        body += intelRow("Previous Club", intel.previousClub);
+        // Season section
+        body += `<div class="intel-section-title mono">Season & Standing</div>`;
+        body += intelRow("Season Stats", intel.seasonStats);
+        body += intelRow("Club Standing", intel.clubStanding);
+        // Notes section
+        body += `<div class="intel-section-title mono">Scouting Notes</div>`;
+        body += `<div class="intel-notes">${intel.notes}</div>`;
+        body += `</div>`;
+      }
+    }
+
+    // ── RUMOUR COLUMNS ──
     body += `<div class="col-headers mono">
       <span class="col-header">DATE</span>
       <span class="col-header">CLUB</span>
@@ -410,6 +639,11 @@ function playerCardHTML(p) {
     </div>`;
 }
 
+function intelRow(key, val) {
+  const display = (!val || val === "—") ? `<span class="intel-gap">Not yet sourced</span>` : val;
+  return `<div class="intel-row"><span class="mono intel-key">${key}</span><span class="intel-val">${display}</span></div>`;
+}
+
 function render() {
   const q = searchQuery.toLowerCase();
   const filtered = PLAYERS.filter(p => {
@@ -450,6 +684,12 @@ function toggleArchive(id, e) {
   render();
 }
 
+function toggleIntel(id, e) {
+  e.stopPropagation();
+  intelOpen[id] = !intelOpen[id];
+  render();
+}
+
 // Search
 document.getElementById("searchInput").addEventListener("input", function(e) {
   searchQuery = e.target.value;
@@ -459,11 +699,15 @@ document.getElementById("searchInput").addEventListener("input", function(e) {
 // Status filter pills
 document.querySelectorAll(".filter-pill").forEach(btn => {
   btn.addEventListener("click", function() {
-    document.querySelectorAll(".filter-pill").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".filter-pill").forEach(b => {
+      b.classList.remove("active");
+      b.style.borderColor = "";
+      b.style.background = "";
+      b.style.color = "";
+    });
     this.classList.add("active");
     statusFilter = this.dataset.status;
 
-    // Dynamic pill color
     const colors = { all:"#8B9EB7", confirmed:"#34D399", active:"#F59E0B", monitoring:"#A78BFA", no_rumours:"#6B7280" };
     const c = colors[statusFilter] || "#8B9EB7";
     this.style.borderColor = c + "66";
